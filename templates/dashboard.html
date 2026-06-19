@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Overview of readmission predictions and patient metrics{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block header_actions %}
+<a href="{{ url_for('predict') }}" class="btn btn-primary">New Prediction</a>
+{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon stat-icon-blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        </div>
+        <div class="stat-info">
+            <span class="stat-label">Total Patients</span>
+            <span class="stat-value">{{ stats.total_patients or 0 }}</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon stat-icon-purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="stat-info">
+            <span class="stat-label">Predictions</span>
+            <span class="stat-value">{{ stats.total_predictions or 0 }}</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon stat-icon-red">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        </div>
+        <div class="stat-info">
+            <span class="stat-label">High Risk</span>
+            <span class="stat-value">{{ stats.high_risk_count or 0 }}</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon stat-icon-green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="stat-info">
+            <span class="stat-label">Avg Risk Score</span>
+            <span class="stat-value">{{ stats.avg_risk or 0 }}%</span>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <div class="card chart-card">
+        <div class="card-header">
+            <h3>Monthly Predictions</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="monthlyChart" height="120"></canvas>
+        </div>
+    </div>
+    <div class="card chart-card">
+        <div class="card-header">
+            <h3>Risk Distribution</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="riskChart" height="120"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Recent Predictions</h3>
+        <a href="{{ url_for('reports') }}" class="link-sm">View all</a>
+    </div>
+    <div class="card-body table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Patient ID</th>
+                    <th>Name</th>
+                    <th>Risk Score</th>
+                    <th>Level</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in recent %}
+                <tr>
+                    <td><code>{{ p.patient_id }}</code></td>
+                    <td>{{ p.first_name or '—' }} {{ p.last_name or '' }}</td>
+                    <td>{{ p.readmission_risk }}%</td>
+                    <td><span class="badge badge-{{ p.risk_level|lower }}">{{ p.risk_level }}</span></td>
+                    <td>{{ p.created_at | datetime_short }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="empty-state">No predictions yet. <a href="{{ url_for('predict') }}">Run your first prediction</a>.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    window.dashboardData = {
+        monthly: {{ monthly | tojson }},
+        risk: {
+            high: {{ stats.high_risk_count or 0 }},
+            medium: {{ stats.medium_risk_count or 0 }},
+            low: {{ stats.low_risk_count or 0 }}
+        }
+    };
+</script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

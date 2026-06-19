@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+
+{% block auth_content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+
+<div class="login-container">
+    <div class="login-panel">
+        <div class="login-brand">
+            <div class="login-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+            </div>
+            <h1>MedPredict</h1>
+            <p>Hospital Readmission Risk Prediction System</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="login-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter username" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+
+        <div class="login-footer">
+            <p>Demo credentials: <code>admin</code> / <code>admin123</code></p>
+        </div>
+    </div>
+
+    <div class="login-hero">
+        <div class="hero-content">
+            <h2>AI-Powered Clinical Decision Support</h2>
+            <p>Predict 30-day hospital readmission risk using machine learning to improve patient outcomes and reduce costs.</p>
+            <ul class="hero-features">
+                <li>Real-time risk scoring</li>
+                <li>Patient management dashboard</li>
+                <li>Analytics & reporting</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

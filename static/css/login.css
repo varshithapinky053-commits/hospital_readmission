@@ -1,0 +1,107 @@
+.auth-page { background: var(--bg); min-height: 100vh; }
+
+.login-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+}
+
+.login-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 48px;
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.login-brand { margin-bottom: 32px; }
+
+.login-logo {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--primary), #7c3aed);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.login-logo svg { width: 28px; height: 28px; color: white; }
+
+.login-brand h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.login-brand p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.login-form { margin-bottom: 24px; }
+
+.login-footer {
+    text-align: center;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
+.login-footer p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.login-hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #2563eb 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    color: white;
+}
+
+.hero-content { max-width: 440px; }
+
+.hero-content h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.3;
+}
+
+.hero-content p {
+    font-size: 1rem;
+    opacity: 0.85;
+    margin-bottom: 24px;
+    line-height: 1.7;
+}
+
+.hero-features {
+    list-style: none;
+}
+
+.hero-features li {
+    padding: 8px 0;
+    padding-left: 28px;
+    position: relative;
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+.hero-features li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #4ade80;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .login-container { grid-template-columns: 1fr; }
+    .login-hero { display: none; }
+    .login-panel { padding: 32px 24px; }
+}

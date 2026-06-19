@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics{% endblock %}
+{% block page_title %}Analytics{% endblock %}
+{% block page_subtitle %}Readmission trends and clinical insights{% endblock %}
+
+{% block content %}
+<div class="analytics-grid">
+    <div class="card chart-card span-2">
+        <div class="card-header"><h3>Monthly Prediction Trends</h3></div>
+        <div class="card-body"><canvas id="trendChart" height="100"></canvas></div>
+    </div>
+    <div class="card chart-card">
+        <div class="card-header"><h3>Risk Level Breakdown</h3></div>
+        <div class="card-body"><canvas id="breakdownChart" height="200"></canvas></div>
+    </div>
+    <div class="card chart-card">
+        <div class="card-header"><h3>Avg Risk by Month</h3></div>
+        <div class="card-body"><canvas id="avgRiskChart" height="200"></canvas></div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h3>Diagnosis Analysis</h3></div>
+    <div class="card-body table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Diagnosis</th>
+                    <th>Predictions</th>
+                    <th>Avg Risk Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in diagnosis_stats %}
+                <tr>
+                    <td>{{ d.diagnosis }}</td>
+                    <td>{{ d.count }}</td>
+                    <td>
+                        <div class="risk-bar-cell">
+                            <div class="risk-bar" style="width: {{ d.avg_risk }}%"></div>
+                            <span>{{ d.avg_risk }}%</span>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="empty-state">No diagnosis data available yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    window.analyticsData = {
+        monthly: {{ monthly | tojson }},
+        riskBreakdown: {{ risk_breakdown | tojson }}
+    };
+</script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.ChartsHelper) {
+            ChartsHelper.initAnalyticsCharts(window.analyticsData);
+        }
+    });
+</script>
+{% endblock %}

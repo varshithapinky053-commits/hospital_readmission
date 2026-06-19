@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Reports{% endblock %}
+{% block page_title %}Reports{% endblock %}
+{% block page_subtitle %}Prediction history and exportable reports{% endblock %}
+
+{% block header_actions %}
+<button class="btn btn-secondary" onclick="window.print()">Print Report</button>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>Prediction History</h3>
+        <span class="text-muted">{{ predictions|length }} records</span>
+    </div>
+    <div class="card-body table-responsive">
+        <table class="data-table" id="reportsTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Patient ID</th>
+                    <th>Patient Name</th>
+                    <th>Diagnosis</th>
+                    <th>Days in Hospital</th>
+                    <th>Medications</th>
+                    <th>Risk Score</th>
+                    <th>Level</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in predictions %}
+                <tr>
+                    <td>{{ p.created_at | datetime_short }}</td>
+                    <td><code>{{ p.patient_id }}</code></td>
+                    <td>{{ p.first_name or '—' }} {{ p.last_name or '' }}</td>
+                    <td>{{ p.primary_diagnosis or '—' }}</td>
+                    <td>{{ p.time_in_hospital }}</td>
+                    <td>{{ p.num_medications }}</td>
+                    <td>{{ p.readmission_risk }}%</td>
+                    <td><span class="badge badge-{{ p.risk_level|lower }}">{{ p.risk_level }}</span></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="empty-state">No prediction records available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

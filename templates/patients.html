@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Patients{% endblock %}
+{% block page_title %}Patient Management{% endblock %}
+{% block page_subtitle %}View and manage registered patients{% endblock %}
+
+{% block header_actions %}
+<button class="btn btn-primary" id="addPatientBtn">Add Patient</button>
+{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+    <form method="GET" class="search-form">
+        <input type="search" name="q" value="{{ search }}" placeholder="Search patients...">
+        <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
+    <span class="result-count">{{ total }} patient(s) found</span>
+</div>
+
+<div class="card">
+    <div class="card-body table-responsive">
+        <table class="data-table" id="patientsTable">
+            <thead>
+                <tr>
+                    <th>Patient ID</th>
+                    <th>Name</th>
+                    <th>DOB</th>
+                    <th>Gender</th>
+                    <th>Diagnosis</th>
+                    <th>Insurance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in patients %}
+                <tr data-id="{{ p.patient_id }}">
+                    <td><code>{{ p.patient_id }}</code></td>
+                    <td>{{ p.first_name }} {{ p.last_name }}</td>
+                    <td>{{ p.date_of_birth }}</td>
+                    <td>{{ p.gender }}</td>
+                    <td>{{ p.primary_diagnosis or '—' }}</td>
+                    <td>{{ p.insurance_type or '—' }}</td>
+                    <td>
+                        <a href="{{ url_for('predict') }}?patient={{ p.patient_id }}" class="btn btn-sm btn-secondary">Predict</a>
+                        <button class="btn btn-sm btn-danger delete-btn" data-id="{{ p.patient_id }}">Delete</button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="empty-state">No patients found. Add your first patient to get started.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if total_pages > 1 %}
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="?q={{ search }}&page={{ page - 1 }}" class="btn btn-secondary">Previous</a>
+    {% endif %}
+    <span>Page {{ page }} of {{ total_pages }}</span>
+    {% if page < total_pages %}
+    <a href="?q={{ search }}&page={{ page + 1 }}" class="btn btn-secondary">Next</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="modal" id="patientModal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-content card">
+        <div class="card-header">
+            <h3>Add New Patient</h3>
+            <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+        <form id="patientForm" class="card-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="new_patient_id">Patient ID</label>
+                    <input type="text" id="new_patient_id" name="patient_id" placeholder="Leave blank to auto-generate (e.g. P-000002)">
+                </div>
+                <div class="form-group">
+                    <label for="first_name">First Name *</label>
+                    <input type="text" id="first_name" name="first_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="last_name">Last Name *</label>
+                    <input type="text" id="last_name" name="last_name" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="date_of_birth">Date of Birth *</label>
+                    <input type="date" id="date_of_birth" name="date_of_birth" required>
+                </div>
+                <div class="form-group">
+                    <label for="new_gender">Gender *</label>
+                    <select id="new_gender" name="gender" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="new_diagnosis">Primary Diagnosis</label>
+                    <input type="text" id="new_diagnosis" name="primary_diagnosis">
+                </div>
+                <div class="form-group">
+                    <label for="new_specialty">Medical Specialty</label>
+                    <input type="text" id="new_specialty" name="medical_specialty">
+                </div>
+                <div class="form-group">
+                    <label for="new_insurance">Insurance Type</label>
+                    <select id="new_insurance" name="insurance_type">
+                        <option value="Medicare">Medicare</option>
+                        <option value="Medicaid">Medicaid</option>
+                        <option value="Private">Private</option>
+                        <option value="Self-Pay">Self-Pay</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelModal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Patient</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/patients.js') }}"></script>
+{% endblock %}
